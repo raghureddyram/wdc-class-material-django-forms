@@ -42,16 +42,7 @@ def create_book(request):
 
 def edit_book(request, book_id=None):
     book = get_object_or_404(Book, id=book_id)
-    if request.method == 'GET':
-        book_form = BookForm(
-            initial={
-                'title': book.title,
-                'author': book.author,
-                'isbn': book.isbn,
-                'popularity': book.popularity
-            }
-        )
-    elif request.method == 'POST':
+    if request.method == 'POST':
         book_form = BookForm(request.POST)
         if book_form.is_valid():
             book.title = book_form.cleaned_data.get('title')
@@ -60,6 +51,16 @@ def edit_book(request, book_id=None):
             book.popularity = book_form.cleaned_data.get('popularity')
             book.save()
             return redirect('index')
+    else:
+        book_form = BookForm(
+            initial={
+                'title': book.title,
+                'author': book.author,
+                'isbn': book.isbn,
+                'popularity': book.popularity
+            }
+        )
+
     return render(
         request,
         'edit_book.html',
@@ -69,7 +70,7 @@ def edit_book(request, book_id=None):
         }
     )
 
-    
+
 def delete_book(request):
     book_id = request.POST.get('book_id')
 
