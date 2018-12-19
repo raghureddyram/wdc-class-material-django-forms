@@ -1,57 +1,19 @@
 <!DOCTYPE html>
+
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
     <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   </head>
   <body>
+    
     <h1>Edit Book:</h1>
     <form class="" action="/edit_book/{{book.id}}/" method="POST">
+      {% load crispy_forms_tags %}
       {% csrf_token %}
-
-      <label for="title">Title:</label>
-      <input
-        id="title"
-        type="text"
-        name='title'
-        {% if 'title' in errors %}
-          value='{{book_data.title}}'
-          style='border: 1px red solid'
-        {% else %}
-          value='{{book.title}}'
-        {% endif %}
-      ><span style='color:red'> {{errors.title}}</span>
-
-        <br>
-
-      <label for="author">Author:</label>
-      <select id="author" name="author">
-        {% for author in authors %}
-          <option value="{{ author.id }}" {% if book_data.author == author.id|stringformat:"i" %}selected{% endif %}>{{ author.name }}</option>
-        {% endfor %}
-      </select>
-
-      <br>
-
-      <label for="isbn">ISBN:</label>
-        <input
-          id="isbn"
-          type="text"
-          name='isbn'
-          value='{{book_data.isbn|default:book.isbn}}'
-        >
-
-      <br>
-
-      <label for="popularity">Popularity:</label>
-      <input
-        id="popularity"
-        type="number"
-        name='popularity'
-        step="0.1"
-        value='{{book_data.popularity|default:book.popularity}}'
-      >
-      <br>
+      {{ book_form|crispy }}
       <a href="/"><button type="button">← Back</button></a>
       <input type="submit" value="Edit">
     </form>

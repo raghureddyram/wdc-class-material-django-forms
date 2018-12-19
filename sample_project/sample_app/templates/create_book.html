@@ -1,29 +1,19 @@
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  </head>
+<body>
+  
+
+{% load crispy_forms_tags %}
 <h1>Create a new book</h1>
 <form class="" action="/create_book/" method="POST">
   {% csrf_token %}
+  {{ book_form|crispy }}
 
-  <label for="title">Title:</label>
-  <input id="title" type="text" name='title' value='{{book_data.title|default:""}}' {% if 'title' in errors %}style='border: 1px red solid'{% endif %}> <span style='color:red'>{{errors.title}}</span>
-
-    <br>
-
-  <label for="author">Author:</label>
-  <select id="author" name="author">
-    {% for author in authors %}
-      <option value="{{ author.id }}" {% if book_data.author == author.id|stringformat:"i" %}selected{% endif %}>{{ author.name }}</option>
-    {% endfor %}
-  </select>
-
-  <br>
-
-  <label for="isbn">ISBN:</label>
-  <input id="isbn" type="text" name='isbn' value='{{book_data.isbn|default:""}}' {% if 'isbn' in errors %}style='border: 1px red solid'{% endif %}> <span style='color:red'>{{errors.isbn}}</span>
-
-  <br>
-
-  <label for="popularity">Popularity:</label>
-  <input id="popularity" type="number" name='popularity' value='{{book_data.popularity|default:""}}' step="0.1" {% if 'popularity' in errors %}style='border: 1px red solid'{% endif %}> <span style='color:red'>{{errors.popularity}}</span>
-  <br>
   <a href="/"><button type="button">← Back</button></a>
   <input type="submit" value="Create book">
 </form>
+</body>

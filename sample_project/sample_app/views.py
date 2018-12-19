@@ -2,6 +2,7 @@ from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from datetime import datetime
+from .forms import BookForm
 
 from .models import Author, Book
 
@@ -27,78 +28,34 @@ def index(request):
 def create_book(request):
     authors = Author.objects.all()
     if request.method == 'GET':
-        return render(request, 'create_book.html', {'authors': authors})
+        book_form = BookForm
+        return render(request, 'create_book.html', {'book_form': book_form})
     elif request.method == 'POST':
-        errors = {}
-        book_data = {
-            'title': request.POST.get('title'),
-            'author': request.POST.get('author'),
-            'isbn': request.POST.get('isbn'),
-            'popularity': request.POST.get('popularity'),
-        }
-        for field in ['title', 'author', 'isbn', 'popularity']:
-            if not request.POST.get(field):
-                errors[field] = 'This field is required.'
-
-        if errors:
-            return render(
-                request,
-                'create_book.html',
-                {
-                    'authors': authors,
-                    'errors': errors,
-                    'book_data': book_data
-                }
-            )
-
-        author = get_object_or_404(Author, id=request.POST['author'])
-        Book.objects.create(
-            title=request.POST['title'],
-            author=author,
-            isbn=request.POST['isbn'],
-            popularity=request.POST['popularity']
-        )
+        book_form = BookForm(request.POST)
+        if book_form.is_valid():
+            Book.objects.create(**book_form.cleaned_data)
+            return redirect('/')
+       
         return redirect('/')
 
 
 def edit_book(request, book_id=None):
     book = get_object_or_404(Book, id=book_id)
-    authors = Author.objects.all()
-    errors = {}
+    
+    if request.method=='GET':
+         book_form = BookForm(instance=book)
+         context = {
+             'book': book,
+             'book_form': book_form
+         }
+         return render(request, 'edit_book.html', context)
 
     if request.method == 'POST':
-        author = get_object_or_404(Author, id=request.POST['author'])
-        title = request.POST['title']
-
-        if not title:
-            errors['title'] = "A title must be provided"
-
-        if len(title) > 30:
-            errors['title'] = "Title can't be longer than 30 chars"
-
-        if not errors:
-            book.title = title
-            book.author = author
-            book.isbn = request.POST['isbn']
-            book.popularity = request.POST['popularity']
-            book.save()
+        book_form = BookForm(request.POST)
+       
+        if book_form.is_valid():
+            book_form.save()
             return redirect('/')
-
-    return render(
-        request,
-        'edit_book.html',
-        context={
-            'book': book,
-            'authors': authors,
-            'errors': errors,
-            'book_data': {
-                'title': request.POST.get('title'),
-                'author': request.POST.get('author'),
-                'isbn': request.POST.get('isbn'),
-                'popularity': request.POST.get('popularity'),
-            }
-        }
-    )
 
 
 def delete_book(request):
